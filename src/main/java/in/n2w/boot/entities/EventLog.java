@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * Created by Karanbir Singh on 4/7/2019.
  **/
 @Entity
-@Table(name = "boot")
+@Table(name = "event_log")
 public class EventLog {
 
     @Id
