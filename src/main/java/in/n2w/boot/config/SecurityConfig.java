@@ -1,7 +1,9 @@
 package in.n2w.boot.config;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -23,6 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     @Qualifier("secureUserDetailsService")
     UserDetailsService userDetailsService;
+
+    @Value("${BASIC_TEXT_ENCRYPTOR_PASSWORD}")
+    String BASIC_TEXT_ENCRYPTOR_PASSWORD;
 
     public SecurityConfig(){
         super();
@@ -55,6 +60,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public BasicTextEncryptor basicTextEncryptor() {
+        final BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
+        basicTextEncryptor.setPassword(BASIC_TEXT_ENCRYPTOR_PASSWORD);
+        return basicTextEncryptor;
     }
 
 }

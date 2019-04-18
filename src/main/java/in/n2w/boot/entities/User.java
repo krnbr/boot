@@ -27,6 +27,9 @@ public class User {
     @NotEmpty(message = "Password confirmation is required.")
     private String passwordConfirmation;
 
+    @Column
+    private Boolean enabled;
+
     private Calendar created = Calendar.getInstance();
 
     public Long getId() {
@@ -67,6 +70,14 @@ public class User {
 
     public void setPasswordConfirmation(final String passwordConfirmation) {
         this.passwordConfirmation = passwordConfirmation;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(final Boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
