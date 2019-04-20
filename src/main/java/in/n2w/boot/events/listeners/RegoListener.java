@@ -3,6 +3,8 @@ package in.n2w.boot.events.listeners;
 import in.n2w.boot.entities.User;
 import in.n2w.boot.events.RegoCompleteEvent;
 import in.n2w.boot.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
@@ -17,6 +19,8 @@ import java.util.UUID;
  **/
 @Component
 public class RegoListener implements ApplicationListener<RegoCompleteEvent> {
+
+    private Logger logger = LoggerFactory.getLogger(RegoListener.class);
 
     @Autowired
     private UserService service;
@@ -47,7 +51,10 @@ public class RegoListener implements ApplicationListener<RegoCompleteEvent> {
     private SimpleMailMessage constructEmailMessage(final RegoCompleteEvent event, final User user, final String token) {
         final String recipientAddress = user.getEmail();
         final String subject = "Registration Confirmation";
-        final String confirmationUrl = event.getAppUrl() + "/registrationConfirm?token=" + token;
+        final String confirmationUrl = event.getAppUrl() + "/registration-confirm?token=" + token;
+
+        logger.info("confirmationUrl -> "+confirmationUrl);
+
         final SimpleMailMessage email = new SimpleMailMessage();
         email.setTo(recipientAddress);
         email.setSubject(subject);

@@ -43,7 +43,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
-                .antMatchers("/signup", "/sign-up").permitAll()
+                .antMatchers(
+                        "/signup",
+                        "/sign-up",
+                        "/registration-confirm*",
+                        "/forgot-password*",
+                        "/user/reset-password",
+                        "/user/change-password*",
+                        "/user/save-password*").permitAll()
                 .antMatchers("/v1/events/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
 
