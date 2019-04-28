@@ -18,8 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 /**
  * Created by Karanbir Singh on 4/10/2019.
  **/
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -57,19 +57,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin().loginPage("/login").permitAll().loginProcessingUrl("/sign-in")
 
-                .and()
-                .rememberMe()
-                .tokenValiditySeconds(604800)
-                .key("neuw-boot-sec")
-                //.useSecureCookie(true)
-                .rememberMeCookieName("sticky-cookie")
-                .rememberMeParameter("remember-user")
 
                 .and()
                 .logout().permitAll().logoutUrl("/logout")
 
                 .and()
                 .csrf().disable();
+
+        http
+                .rememberMe()
+                .tokenValiditySeconds(604800)
+                //.key("neuw-boot-sec")
+                //.useSecureCookie(true)
+                .rememberMeCookieName("sticky-cookie")
+                .rememberMeParameter("remember-user");
+
+
+
     }
 
     @Bean
