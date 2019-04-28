@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/sign-up",
                         "/registration-confirm*",
                         "/forgot-password*",
-                        "/user/reset-password",
+                        "/user/reset-password*",
                         "/user/change-password*",
                         "/user/save-password*").permitAll()
                 .antMatchers("/v1/events/**").hasAnyRole("USER")
@@ -56,6 +56,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin().loginPage("/login").permitAll().loginProcessingUrl("/sign-in")
+
+                .and()
+                .rememberMe()
+                .tokenValiditySeconds(604800)
+                .key("neuw-boot-sec")
+                //.useSecureCookie(true)
+                .rememberMeCookieName("sticky-cookie")
+                .rememberMeParameter("remember-user")
 
                 .and()
                 .logout().permitAll().logoutUrl("/logout")
