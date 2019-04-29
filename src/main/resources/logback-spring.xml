@@ -9,7 +9,7 @@
         </encoder>
     </appender>
 
-    <logger name="root" additivity="false" level="debug">
+    <logger name="root" additivity="false" level="info">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
