@@ -56,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/forgot-password*",
                         "/user/reset-password*",
                         "/user/change-password*",
-                        "/user/save-password*").permitAll()
+                        "/user/save-password*",
+                        "/v1/aws/**").permitAll()
                 .antMatchers("/v1/events/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
 
