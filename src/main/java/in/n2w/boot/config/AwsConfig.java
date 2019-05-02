@@ -4,17 +4,14 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClient;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.config.QueueMessageHandlerFactory;
 import org.springframework.cloud.aws.messaging.config.SimpleMessageListenerContainerFactory;
-import org.springframework.cloud.aws.messaging.config.annotation.EnableSqs;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import org.springframework.cloud.aws.messaging.listener.QueueMessageHandler;
+import org.springframework.cloud.aws.messaging.listener.SimpleMessageListenerContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -61,11 +58,25 @@ public class AwsConfig {
     @Bean
     public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSQSAsync) {
         SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
-        factory.setMaxNumberOfMessages(5);
+        factory.setMaxNumberOfMessages(10);
         factory.setWaitTimeOut(5);
         factory.setAmazonSqs(amazonSQSAsync);
-        System.out.println("SMLCF... ");
         return factory;
+    }
+
+    @Bean
+    public QueueMessageHandler queueMessageHandler(AmazonSQSAsync amazonSQS) {
+        QueueMessageHandlerFactory factory = new QueueMessageHandlerFactory();
+        factory.setAmazonSqs(amazonSQS);
+        return factory.createQueueMessageHandler();
+    }
+
+    @Bean
+    public SimpleMessageListenerContainer simpleMessageListenerContainer(SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory, QueueMessageHandler queueMessageHandler) {
+        SimpleMessageListenerContainer container = simpleMessageListenerContainerFactory.createSimpleMessageListenerContainer();
+        container.setMessageHandler(queueMessageHandler);
+        container.setWaitTimeOut(20);
+        return container;
     }
 
     /*@Bean

@@ -6,11 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.aws.messaging.listener.annotation.SqsListener;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.messaging.handler.annotation.Headers;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by Karanbir Singh on 5/1/2019.
@@ -21,18 +19,9 @@ public class BootQueueListener {
 
     private Logger logger = LoggerFactory.getLogger(BootQueueListener.class);
 
-    CountDownLatch countDownLatch;
-
-    public void setCountDownLatch(CountDownLatch countDownLatch) {
-        this.countDownLatch = countDownLatch;
-    }
-
-    @SqsListener("https://sqs.ap-south-1.amazonaws.com/439287949723/boot")
+    @SqsListener("${sqs.default.queue.name}")
     public void receiveMessage(EventLogDto message, @Headers Map<String, String> headers) {
         logger.info("Received message: {}, having headers: {}", message, headers);
-        if (countDownLatch != null) {
-            countDownLatch.countDown();
-        }
     }
 
 }
