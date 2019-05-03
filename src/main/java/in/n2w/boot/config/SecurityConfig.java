@@ -10,10 +10,13 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * Created by Karanbir Singh on 4/10/2019.
@@ -28,6 +31,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${BASIC_TEXT_ENCRYPTOR_PASSWORD}")
     String BASIC_TEXT_ENCRYPTOR_PASSWORD;
+
+    @Autowired
+    private DataSource dataSource;
 
     public SecurityConfig(){
         super();
@@ -50,7 +56,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/forgot-password*",
                         "/user/reset-password*",
                         "/user/change-password*",
-                        "/user/save-password*").permitAll()
+                        "/user/save-password*",
+                        "/v1/aws/**").permitAll()
                 .antMatchers("/v1/events/**").hasAnyRole("USER")
                 .anyRequest().authenticated()
 
@@ -69,11 +76,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .tokenValiditySeconds(604800)
                 //.key("neuw-boot-sec")
                 //.useSecureCookie(true)
-                .rememberMeCookieName("sticky-cookie")
-                .rememberMeParameter("remember-user");
+                //.rememberMeCookieName("sticky-cookie")
+                .rememberMeParameter("remember-user")
+                .tokenRepository(persistentTokenRepository());
 
 
 
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        final JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        return jdbcTokenRepository;
     }
 
     @Bean
