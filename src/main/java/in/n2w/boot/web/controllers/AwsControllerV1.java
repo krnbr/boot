@@ -38,6 +38,9 @@ public class AwsControllerV1 {
     @Value("${aws.sqs.boot.url}")
     private String boot_queue;
 
+    @Value("${sqs.default.queue.name}")
+    private String boot_queue_name;
+
     private Logger logger = LoggerFactory.getLogger(AwsControllerV1.class);
 
     // calls the aws sqs easily for strings and numbers etc.
@@ -75,7 +78,7 @@ public class AwsControllerV1 {
     public boolean event(@RequestParam String log){
         EventLogDto eventLogDto = new EventLogDto(new Random().nextLong(), log, LocalDateTime.now());
 
-        queueMessagingTemplate.convertAndSend("boot", eventLogDto);
+        queueMessagingTemplate.convertAndSend(boot_queue_name, eventLogDto);
         return true;
     }
 
