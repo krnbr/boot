@@ -19,7 +19,8 @@ public class BootQueueListener {
 
     private Logger logger = LoggerFactory.getLogger(BootQueueListener.class);
 
-    @SqsListener("${sqs.default.queue.name}")
+    // disabled it temporally
+    /*@SqsListener("${sqs.default.queue.name}")*/
     public void receiveMessage(EventLogDto message, @Headers Map<String, String> headers) {
         logger.info("Received message: {}, having headers: {}", message, headers);
     }
