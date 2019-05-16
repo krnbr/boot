@@ -5,12 +5,14 @@ import com.amazonaws.services.sqs.model.MessageAttributeValue;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 import in.n2w.boot.cloud.sqs.DataTypes;
+import in.n2w.boot.config.conditions.EnableAwsCondition;
 import in.n2w.boot.dtos.EventLogDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +29,7 @@ import java.util.Random;
  **/
 @RestController
 @RequestMapping("/v1/aws/")
+@Conditional(EnableAwsCondition.class)
 public class AwsControllerV1 {
 
     @Autowired
@@ -42,6 +45,10 @@ public class AwsControllerV1 {
     private String boot_queue_name;
 
     private Logger logger = LoggerFactory.getLogger(AwsControllerV1.class);
+
+    public AwsControllerV1(){
+        logger.info("The "+this.getClass().getName()+" has been initialized");
+    }
 
     // calls the aws sqs easily for strings and numbers etc.
     @GetMapping("test")
