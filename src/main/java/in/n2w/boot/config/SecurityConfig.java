@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,9 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
+    private AuthenticationProvider daoAuthenticationProvider;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -101,6 +102,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
         basicTextEncryptor.setPassword(BASIC_TEXT_ENCRYPTOR_PASSWORD);
         return basicTextEncryptor;
+    }
+
+    @Bean
+    public AuthenticationProvider runAsAuthenticationProvider() {
+        final RunAsImplAuthenticationProvider authProvider = new RunAsImplAuthenticationProvider();
+        authProvider.setKey("access-as-user");
+        return authProvider;
+    }
+
+    @Bean
+    public AuthenticationProvider daoAuthenticationProvider(PasswordEncoder passwordEncoder) {
+        final DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth.authenticationProvider(daoAuthenticationProvider);
+        auth.authenticationProvider(runAsAuthenticationProvider());
     }
 
 }
