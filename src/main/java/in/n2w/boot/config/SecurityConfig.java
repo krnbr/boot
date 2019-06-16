@@ -1,5 +1,6 @@
 package in.n2w.boot.config;
 
+import in.n2w.boot.web.filters.LoggingFilter;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
@@ -45,10 +47,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private AuthenticationProvider daoAuthenticationProvider;
 
+    @Autowired
+    private LoggingFilter loggingFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                .addFilterBefore(loggingFilter, AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(
                         "/signup",
