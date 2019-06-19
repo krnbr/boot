@@ -42,4 +42,15 @@ public class RunAsController {
         return "successfully tested";
     }
 
+    /**
+     * The endpoint /api/v1/run/as/current-user
+     * Endpoint exposes the current user's authentication object's details
+     * And This should include privilege based authorities
+     * @return Authentication
+     */
+    @GetMapping("current-user")
+    public Authentication notTestNotProtected(){
+        return runAsService.getCurrentUserNotProtected();
+    }
+
 }

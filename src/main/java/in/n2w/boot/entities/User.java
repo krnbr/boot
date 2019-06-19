@@ -1,26 +1,23 @@
 package in.n2w.boot.entities;
 
-
-import in.n2w.boot.validations.PasswordMatches;
+import java.util.Calendar;
+import java.util.Collection;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
+
 import javax.validation.constraints.NotEmpty;
-import java.util.Calendar;
 
 @Entity
-@PasswordMatches
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Email
     @NotEmpty(message = "Email is required.")
     private String email;
 
-    @NotEmpty(message = "Password is required.")
+    @NotEmpty(message = "Email is required.")
     private String password;
 
     @Transient
@@ -31,6 +28,10 @@ public class User {
     private Boolean enabled;
 
     private Calendar created = Calendar.getInstance();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Collection<Role> roles;
 
     public Long getId() {
         return this.id;
@@ -49,10 +50,10 @@ public class User {
     }
 
     public String getEmail() {
-        return email;
+        return this.email;
     }
 
-    public void setEmail(final String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -60,28 +61,31 @@ public class User {
         return password;
     }
 
-    public void setPassword(final String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getPasswordConfirmation() {
-        return passwordConfirmation;
+    public Collection<Role> getRoles() {
+        return roles;
     }
 
-    public void setPasswordConfirmation(final String passwordConfirmation) {
-        this.passwordConfirmation = passwordConfirmation;
+    public void setRoles(final Collection<Role> roles) {
+        this.roles = roles;
     }
 
     public Boolean getEnabled() {
         return enabled;
     }
 
-    public void setEnabled(final Boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
-    @Override
-    public String toString() {
-        return "User{" + "id=" + id + ", email='" + email + '\'' + ", password='" + password + '\'' + ", passwordConfirmation='" + passwordConfirmation + '\'' + ", created=" + created + '}';
+    public String getPasswordConfirmation() {
+        return passwordConfirmation;
+    }
+
+    public void setPasswordConfirmation(String passwordConfirmation) {
+        this.passwordConfirmation = passwordConfirmation;
     }
 }

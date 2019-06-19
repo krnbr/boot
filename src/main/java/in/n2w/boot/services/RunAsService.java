@@ -17,4 +17,9 @@ public class RunAsService {
         return authentication;
     }
 
+    public Authentication getCurrentUserNotProtected() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication;
+    }
+
 }
