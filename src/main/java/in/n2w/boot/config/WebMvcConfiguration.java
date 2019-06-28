@@ -1,6 +1,9 @@
 package in.n2w.boot.config;
 
+import org.apache.catalina.Context;
+import org.apache.tomcat.util.scan.StandardJarScanner;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -47,6 +50,15 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
         viewResolver.setCache(false);
         viewResolver.setSuffix(JSP_VIEW_SUFFIX);
         return viewResolver;
+    }
+
+    @Bean
+    public TomcatServletWebServerFactory tomcatFactory() {
+        return new TomcatServletWebServerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+                ((StandardJarScanner) context.getJarScanner()).setScanManifest(false);
+            }};
     }
 
 }
