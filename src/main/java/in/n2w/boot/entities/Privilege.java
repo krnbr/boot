@@ -1,12 +1,9 @@
 package in.n2w.boot.entities;
 
-import java.util.Collection;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Privilege {
@@ -17,8 +14,9 @@ public class Privilege {
 
     private String name;
 
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles;
+    @ManyToMany(mappedBy = "privileges", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Role> roles;
 
     public Privilege() {
         super();
@@ -28,8 +26,6 @@ public class Privilege {
         super();
         this.name = name;
     }
-
-    //
 
     public Long getId() {
         return id;
@@ -47,44 +43,19 @@ public class Privilege {
         this.name = name;
     }
 
-    public Collection<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(final Collection<Role> roles) {
+    public void setRoles(final Set<Role> roles) {
         this.roles = roles;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Privilege privilege = (Privilege) obj;
-        if (!privilege.equals(privilege.name)) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Privilege [name=").append(name).append("]").append("[id=").append(id).append("]");
-        return builder.toString();
+        return "Privilege{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

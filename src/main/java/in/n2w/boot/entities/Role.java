@@ -1,15 +1,8 @@
 package in.n2w.boot.entities;
 
-import java.util.Collection;
-
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Role {
@@ -18,22 +11,12 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
+    /*@LazyCollection(LazyCollectionOption.FALSE)*/
     @JoinTable(name = "roles_privileges", joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
-    private Collection<Privilege> privileges;
+    private Set<Privilege> privileges;
 
     private String name;
-
-    public Role() {
-        super();
-    }
-
-    public Role(final String name) {
-        super();
-        this.name = name;
-    }
-
-    //
 
     public Long getId() {
         return id;
@@ -51,44 +34,33 @@ public class Role {
         this.name = name;
     }
 
-    public Collection<Privilege> getPrivileges() {
+    public Set<Privilege> getPrivileges() {
         return privileges;
     }
 
-    public void setPrivileges(final Collection<Privilege> privileges) {
+    public void setPrivileges(final Set<Privilege> privileges) {
         this.privileges = privileges;
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = (prime * result) + ((name == null) ? 0 : name.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Role role = (Role) o;
+        return id.equals(role.id) &&
+                name.equals(role.name);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Role role = (Role) obj;
-        if (!role.equals(role.name)) {
-            return false;
-        }
-        return true;
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 
     @Override
     public String toString() {
-        final StringBuilder builder = new StringBuilder();
-        builder.append("Role [name=").append(name).append("]").append("[id=").append(id).append("]");
-        return builder.toString();
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

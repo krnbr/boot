@@ -24,10 +24,14 @@ public class LoggingFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        final HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        final String url = httpServletRequest.getRequestURL().toString();
-        final String queryString = Optional.ofNullable(httpServletRequest.getQueryString()).map(value -> "?" + value).orElse("");
-        logger.info(String.format("Filter log for URI: %s%s", url, queryString));
+        logger.info(
+            String.format(
+                "Filter log for URI: %s%s %s",
+                ((HttpServletRequest) request).getRequestURL().toString(),
+                Optional.ofNullable(((HttpServletRequest) request).getQueryString()).map(value -> "?" + value).orElse(""),
+                ((HttpServletRequest) request).getMethod()
+            )
+        );
 
         chain.doFilter(request, response);
         return;

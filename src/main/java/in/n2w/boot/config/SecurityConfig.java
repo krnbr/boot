@@ -1,5 +1,7 @@
 package in.n2w.boot.config;
 
+import com.google.common.collect.Lists;
+import in.n2w.boot.security.CustomUrlAccessDecisionVoter;
 import in.n2w.boot.web.filters.LoggingFilter;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +9,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
+import org.springframework.security.access.vote.AuthenticatedVoter;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -17,11 +24,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * Created by Karanbir Singh on 4/10/2019.
@@ -50,12 +59,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private LoggingFilter loggingFilter;
 
+    @Autowired
+    private CustomUrlAccessDecisionVoter customUrlAccessDecisionVoter;
+
+    @Bean
+    public AccessDecisionManager unanimous(){
+        final List<AccessDecisionVoter<? extends Object>> voters = Lists.newArrayList(new RoleVoter(), new AuthenticatedVoter(), customUrlAccessDecisionVoter, new WebExpressionVoter());
+        return new UnanimousBased(voters);
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http
                 .addFilterBefore(loggingFilter, AnonymousAuthenticationFilter.class)
                 .authorizeRequests()
+                .accessDecisionManager(unanimous())
                 .antMatchers(
                         "/signup",
                         "/sign-up",
